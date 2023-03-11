@@ -58,7 +58,7 @@ class User:
         Returns
         -------
         dict
-            {'repositórios': 'Urls'}.
+            {'repositórios': 'urls'}.
 
         """
         
