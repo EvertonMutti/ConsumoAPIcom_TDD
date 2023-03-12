@@ -31,11 +31,6 @@ class TestUser(unittest.TestCase):
     def test_User_assertion_username_str(self):
         self.assertIsInstance(self.user.username, str)
     
-    #def test_User_assertion_username_caso_nao_seja_str(self):
-        #with self.assertRaises(AssertionError): 
-            #assert isinstance(self.user.username, (dict,list,tuple,
-                                                   #set,int,float))
-        
     def test_User_assertion_atributos(self):
         self.assertIsInstance(self.user.nome, str)
         self.assertIsInstance(self.user.url_perfil, str)
@@ -43,7 +38,7 @@ class TestUser(unittest.TestCase):
         self.assertIsInstance(self.user.num_seguidores, int)
         self.assertIsInstance(self.user.num_seguindo, int)
     
-    def test_obter_dados(self):
+    def test_obterDados(self):
         #Dados falsos
         resposta_dados_mock = {
             'name': 'Everton Mutti',
@@ -66,7 +61,7 @@ class TestUser(unittest.TestCase):
     
     def test_repositorios(self):
         #Dados falsos
-        resposta_mock = [
+        respositorios_mock = [
             {'name': 'igottafeeling', 'html_url': 'https://github.com/testuser/igottafeeling'},
             {'name': 'millaeumanoite', 'html_url': 'https://github.com/testuser/millaeumanoite'},
             {'name': 'prefixodeverao', 'html_url': 'https://github.com/testuser/prefixodeverao'},
@@ -74,16 +69,16 @@ class TestUser(unittest.TestCase):
         
         with patch('requests.get') as mock_get:
             mock_get.return_value.status_code = 200
-            mock_get.return_value.json.return_value = resposta_mock
+            mock_get.return_value.json.return_value = respositorios_mock
             repositorios = self.user.obterRepositorios()
             
-        for res_mock in resposta_mock:
+        for res_mock in respositorios_mock:
             with self.subTest(saida=res_mock.get('html_url')):
                 self.assertEqual(repositorios['igottafeeling'], 'https://github.com/testuser/igottafeeling')
                 self.assertEqual(repositorios['millaeumanoite'], 'https://github.com/testuser/millaeumanoite')
                 self.assertEqual(repositorios['prefixodeverao'], 'https://github.com/testuser/prefixodeverao')
     
-    def test_gerar_arquivo(self):
+    def test_gerarArquivo(self):
         resposta_dados_mock = {
             'name': 'Everton Mutti',
             'html_url': 'https://github.com/EvertonMutti',
@@ -96,6 +91,24 @@ class TestUser(unittest.TestCase):
             {'name': 'millaeumanoite', 'html_url': 'https://github.com/testuser/millaeumanoite'},
             {'name': 'prefixodeverao', 'html_url': 'https://github.com/testuser/prefixodeverao'},
         ]
+        
+        with patch('requests.get') as mock_get:
+            mock_get.return_value.status_code = 200
+            mock_get.return_value.json.side_effect = [resposta_dados_mock, respositorios_mock]
+            
+            self.user.gerarArquivo()
+            
+            with open(self.user.username + '.txt', 'r') as arquivo:
+                arquivo_text = arquivo.read()
+                
+            self.assertIn("Nome: Everton Mutti", arquivo_text)
+            self.assertIn("Perfil: https://github.com/EvertonMutti", arquivo_text)
+            self.assertIn("Repositórios:", arquivo_text)
+            self.assertIn("igottafeeling: https://github.com/testuser/igottafeeling", arquivo_text)
+            self.assertIn("millaeumanoite: https://github.com/testuser/millaeumanoite", arquivo_text)
+            self.assertIn("prefixodeverao: https://github.com/testuser/prefixodeverao", arquivo_text)
+            
+        os.remove(self.user.username + '.txt')
     
 if __name__ == '__main__':
     unittest.main(verbosity=2)
