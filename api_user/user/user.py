@@ -15,6 +15,13 @@ class User:
         self.num_seguidores: int = 0
         self.num_seguindo: int = 0
 
+    def verificaRequisicao(self, resposta: object) -> bool:
+        if resposta.status_code == 403:
+            raise Exception(f'Api do github tem limite de requisições: {resposta.status_code}')
+        elif resposta.status_code != 200:
+            raise Exception(f'Erro ao fazer requisição: {resposta.status_code}')
+        return True
+
     def obterDados(self) -> None:
         """
         Obtêm os dados do usuário a partir do username passado na inicialização da classe.
@@ -34,10 +41,7 @@ class User:
         url: str = f'https://api.github.com/users/{self.username}'
         resposta = requests.get(url)
 
-        if resposta.status_code == 403:
-            raise Exception(f'Api do github tem limite de requisições: {resposta.status_code}')
-        elif resposta.status_code != 200:
-            raise Exception(f'Erro ao fazer requisição: {resposta.status_code}')
+        self.verificaRequisicao(resposta)
 
         dados: dict = resposta.json()        
         self.nome = dados.get('name')
@@ -65,15 +69,10 @@ class User:
         url: str = f'https://api.github.com/users/{self.username}/repos'
         resposta = requests.get(url)
         
-        if resposta.status_code == 403:
-            raise Exception(f'Api do github tem limite de requisições: {resposta.status_code}')
-        elif resposta.status_code != 200:
-            raise Exception(f'Erro ao fazer a requisição: {resposta.status_code}')
+        self.verificaRequisicao(resposta)
 
         dados: dict = resposta.json()
-        repositorios = {}
-        for repo in dados:
-            repositorios[repo.get('name')] = repo.get('html_url')
+        repositorios = {repo.get('name'): repo.get('html_url') for repo in dados}
 
         return repositorios
         
@@ -104,7 +103,6 @@ class User:
                 arquivo.write("Repositórios:\n")
                 for nome, url in repositorios.items():
                     arquivo.write(f"\t{nome}: {url}\n")
-            
                     
         except PermissionError:
             raise PermissionError("Não foi possível criar nem escrever no arquivo. Verifique as permissões de acesso.")
@@ -113,6 +111,9 @@ class User:
             raise erro
             
         return True
+    
+    def __str__(self):
+        return f"Nome: {self.nome}\nPerfil: {self.url_perfil}\nNúmero de repositórios públicos: {self.num_repos_publicos}\nNúmero de seguidores: {self.num_seguidores}\nNúmero de seguindo: {self.num_seguindo}"
 
 if __name__ == '__main__':
     usuario = User('EvertonMutti')
