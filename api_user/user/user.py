@@ -113,7 +113,7 @@ class User:
         return True
     
     def __str__(self):
-        return f"Nome: {self.nome}\nPerfil: {self.url_perfil}\nNúmero de repositórios públicos: {self.num_repos_publicos}\nNúmero de seguidores: {self.num_seguidores}\nNúmero de seguindo: {self.num_seguindo}"
+        return f"Nome: {self.nome}\nPerfil: {self.url_perfil}\nNúmero de repositórios públicos: {self.num_repos_publicos}\nNúmero de seguidores: {self.num_seguidores}\nNúmero de usuários seguindo: {self.num_seguindo}"
 
 if __name__ == '__main__':
     usuario = User('EvertonMutti')
