@@ -24,7 +24,7 @@
 <br>
 <h2>Métodos</h2>
 <br>
-<p>obterDados(): obtém os dados do usuário a partir do username passado na inicialização da classe</p>
+<p>obterDados(): obtém os dados do usuário a partir do username passado na inicialização da classe e para acessar as informações que ele coleta, acesse os atributos listados acima</p>
 <p>obterRepositorios(): obtém os repositórios do usuário a partir do username passado na inicialização da classe</p>
 <p>gerarArquivo(): obtém os repositórios e dados do usuário os transferindo para um arquivo txt com o nome do username passado na inicialização do objeto.</p> 
 
