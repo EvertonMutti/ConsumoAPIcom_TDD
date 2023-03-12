@@ -9,5 +9,7 @@ from user.user import User
 if __name__ == '__main__':
     usuario = User('EvertonMutti')
     usuario.obterDados()
+    print(usuario)
+    print(usuario.obterRepositorios())
     if usuario.gerarArquivo():
         print('Arquivo gerado com sucesso')
