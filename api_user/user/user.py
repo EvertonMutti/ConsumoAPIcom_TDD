@@ -77,8 +77,45 @@ class User:
 
         return repositorios
         
-    
+    def gerarArquivo(self) -> bool:
+        """
+        Obtêm os repositórios e dados do usuário os transferindo para um arquivo
+        txt com o nome do username fornecido na inicialização do objeto.
+        
+        Returns
+        -------
+        bool
+            Retorna True caso gere o arquivo.
+
+        """
+        
+        self.obterDados()
+        repositorios = self.obterRepositorios()
+        nome_arquivo = f"{self.username}.txt"
+        
+        try:
+            with open(nome_arquivo, "w") as arquivo:
+                arquivo.write(f"Nome: {self.nome}\n")
+                arquivo.write(f"Perfil: {self.url_perfil}\n")
+                arquivo.write(f"Número de repositórios publicos: {self.num_repos_publicos}\n")
+                arquivo.write(f"Número de seguidores: {self.num_seguidores}\n")
+                arquivo.write(f"Número de usuários seguidos: {self.num_seguindo}\n\n")
+                
+                arquivo.write("Repositórios:\n")
+                for nome, url in repositorios.items():
+                    arquivo.write(f"\t{nome}: {url}\n")
+            
+                    
+        except PermissionError:
+            raise PermissionError("Não foi possível criar nem escrever no arquivo. Verifique as permissões de acesso.")
+        
+        except Exception as erro:
+            raise erro
+            
+        return True
+
 if __name__ == '__main__':
     usuario = User('EvertonMutti')
     usuario.obterDados()
-    print(usuario.obterRepositorios())
+    usuario.obterRepositorios()
+    usuario.gerarArquivo()
