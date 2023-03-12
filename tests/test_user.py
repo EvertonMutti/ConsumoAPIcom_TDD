@@ -38,6 +38,12 @@ class TestUser(unittest.TestCase):
         self.assertIsInstance(self.user.num_seguidores, int)
         self.assertIsInstance(self.user.num_seguindo, int)
     
+    def test_verificaRequisicao_200(self):
+        with patch('requests.get') as mock_get:
+            mock_get.return_value.status_code = 200
+            requisicao = self.user.verificaRequisicao(mock_get.return_value)
+            self.assertTrue(requisicao)
+            
     def test_obterDados(self):
         #Dados falsos
         resposta_dados_mock = {
@@ -79,6 +85,7 @@ class TestUser(unittest.TestCase):
                 self.assertEqual(repositorios['prefixodeverao'], 'https://github.com/testuser/prefixodeverao')
     
     def test_gerarArquivo(self):
+        #Dados falsos
         resposta_dados_mock = {
             'name': 'Everton Mutti',
             'html_url': 'https://github.com/EvertonMutti',
@@ -98,7 +105,7 @@ class TestUser(unittest.TestCase):
             
             self.user.gerarArquivo()
             
-            with open(self.user.username + '.txt', 'r') as arquivo:
+            with open(f"{self.user.username}.txt", 'r') as arquivo:
                 arquivo_text = arquivo.read()
                 
             self.assertIn("Nome: Everton Mutti", arquivo_text)
@@ -108,7 +115,7 @@ class TestUser(unittest.TestCase):
             self.assertIn("millaeumanoite: https://github.com/testuser/millaeumanoite", arquivo_text)
             self.assertIn("prefixodeverao: https://github.com/testuser/prefixodeverao", arquivo_text)
             
-        os.remove(self.user.username + '.txt')
+        os.remove(f"{self.user.username}.txt")
     
 if __name__ == '__main__':
     unittest.main(verbosity=2)
